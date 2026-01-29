@@ -1,88 +1,86 @@
-# 🧩 Monorepo: Sistema de Órdenes de Trading (NestJS + Next.js)
+# 🎙️ Sistema de Órdenes de Trading: Inmersión Arquitectónica Profunda
 
-Bienvenido al **Sistema de Órdenes de Trading**, una solución full-stack robusta construida como parte de un desafío técnico. Este proyecto demuestra una arquitectura lista para producción, diseñada para escalabilidad, seguridad de tipos y una gestión de datos eficiente.
-
-## 🎙️ El "Speech": ¿Por qué esta Arquitectura?
-
-Al construir aplicaciones web modernas, la elección de las herramientas define el éxito del proyecto. Aquí explicamos por qué elegimos este stack específico:
-
-### 1. ¿Por qué un Monorepo?
-Utilizamos una estructura de **monorepo con pnpm** para mantener el backend y el frontend estrechamente acoplados pero físicamente separados. Esto nos permite:
--   **Flujo de Trabajo Unificado**: Gestionar dependencias y ejecutar ambas aplicaciones desde una única raíz.
--   **Estándares Compartidos**: Mantener configuraciones consistentes de linting, formateo y TypeScript en toda la base de código.
--   **Escalabilidad Futura**: Agregar fácilmente paquetes compartidos (como DTOs o funciones de utilidad) que tanto la API como la aplicación Web pueden consumir.
-
-### 2. ¿Por qué NestJS para el Backend?
-NestJS fue la elección clara para la API debido a:
--   **Arquitectura Modular**: Impone una separación limpia de responsabilidades mediante Módulos, Controladores y Servicios.
--   **Validaciones Integradas**: Utilizando `class-validator` y `ValidationPipe`, garantizamos que cada dato que ingresa al sistema sea válido según el esquema.
--   **Experiencia de Desarrollo**: Funcionalidades como **Swagger UI** (disponible en `/api/docs`) permiten la exploración y prueba instantánea de la API sin herramientas externas.
-
-### 3. ¿Por qué Next.js para el Frontend?
-Para la aplicación web, Next.js proporciona:
--   **Capacidades del Lado del Servidor**: Mediante **Server Actions** y **Server Components**, reducimos la cantidad de JavaScript enviado al cliente manteniendo un flujo de datos seguro.
--   **Localización**: Integrado con `next-intl` para soportar múltiples idiomas de forma fluida (Español/Inglés).
--   **Diseño Moderno**: Construido con **DaisyUI** y **Tailwind CSS**, ofreciendo una estética premium de glassmorphism y diseño responsivo.
+> **Contexto de Entrevista Técnica**: Este proyecto está estructurado no solo como una solución a un desafío, sino como una demostración de decisiones arquitectónicas de alto nivel, principios de código limpio (Clean Code) y estándares empresariales listos para producción.
 
 ---
 
-## 🚀 Características Principales
+## 🏛️ Visión Arquitectónica y Decisiones de Diseño
 
--   **Validaciones de Trading Complejas**: Lógica estricta para órdenes **Limit**, **Market** y **Stop** basada en precios de mercado en tiempo real (BTCUSD, EURUSD, ETHUSD).
--   **Sistema de Soft Delete (Borrado Lógico)**: Las órdenes nunca se pierden realmente. Se marcan como eliminadas pero permanecen en la base de datos para auditoría, visibles en la interfaz con una etiqueta especial.
--   **Paginación Avanzada**: Obtención de datos eficiente con paginación en el servidor para manejar miles de órdenes sin afectar el rendimiento.
--   **Docs de API Interactivos**: API REST totalmente documentada usando Swagger.
--   **Pruebas Unitarias**: La lógica de negocio central (validaciones) está respaldada por pruebas unitarias con Jest.
+### 1. La Elección del Monorepo (pnpm Workspaces)
+**Pregunta: ¿Por qué usar un Monorepo para un desafío de un solo servicio?**
+**Respuesta**: Por escalabilidad y contexto compartido. Usando **pnpm workspaces**, hemos creado un entorno donde la `apps/api` (Backend) y `apps/web` (Frontend) coexisten bajo una única fuente de verdad.
+-   **Compartición Estricta de Tipos**: Aunque actualmente están separados, la arquitectura está preparada para mover DTOs e Interfaces a `packages/shared`, asegurando que un cambio en el esquema del backend se refleje instantáneamente como un error de tipos en el frontend.
+-   **Orquestación**: Un solo comando `pnpm dev` gestiona ambos servidores de desarrollo, reduciendo significativamente la fricción para el desarrollador.
 
----
+### 2. Backend: NestJS y Modularidad Escalable
+**Pregunta: ¿Por qué NestJS en lugar de una configuración simple con Express?**
+**Respuesta**: NestJS proporciona una infraestructura robusta "out-of-the-box" basada en conceptos similares a Angular (Módulos, Servicios, Controladores).
+-   **Inyección de Dependencias (DI)**: Al utilizar el contenedor DI de Nest, aseguramos que nuestro `TradeOrdersService` sea fácilmente reemplazable por mocks para pruebas unitarias, cumpliendo con el principio de **Inversión de Dependencias**.
+-   **Desarrollo Basado en Decoradores**: Aprovechamos los decoradores para todo, desde la documentación de la API (Swagger) hasta la validación de peticiones (`class-validator`), lo que mantiene la lógica de negocio limpia de código repetitivo de validación.
 
-## 📁 Estructura del Proyecto
-
-```text
-/
-├── apps/
-│   ├── api/        # NestJS (Backend) - Puerto 4000
-│   └── web/        # Next.js (Frontend) - Puerto 3000
-├── packages/
-│   └── shared/     # (Placeholder para futura lógica compartida)
-├── package.json    # Scripts de la raíz
-└── README.md       # Documentación en Inglés
-└── README.ES.md    # Documentación en Español
-```
-
-## ⚙️ Instalación y Configuración
-
-### Requisitos
--   Node.js 20+
--   pnpm v8+
--   Base de datos MySQL
-
-### Pasos
-1.  **Clonar e Instalar**:
-    ```bash
-    git clone <repo-url>
-    cd challenge-trading-order
-    pnpm install
-    ```
-2.  **Variables de Entorno**:
-    Configurar el archivo `.env` en `apps/api` con tus credenciales de MySQL (DB_HOST, DB_NAME, DB_USER, DB_PASS).
-3.  **Ejecutar Desarrollo**:
-    ```bash
-    pnpm dev
-    ```
+### 3. Frontend: Next.js (App Router) y SSR
+**Pregunta: ¿Cuál fue la estrategia para el Frontend?**
+**Respuesta**: Elegimos **Next.js** para aprovechar su naturaleza híbrida.
+-   **Server Components y Actions**: Utilizamos Server Actions para mutaciones de datos (Crear, Borrar). Esto nos permite mantener la lógica sensible en el servidor mientras actualizamos la interfaz sin necesidad de una gestión de estado compleja en el cliente (como Redux).
+-   **SEO y Velocidad**: El Renderizado del Lado del Servidor (SSR) garantiza que la lista inicial de trades se entregue al cliente como HTML puro, mejorando el Tiempo de Interactividad (TTI).
+-   **Experiencia de Usuario (UX)**: Implementamos un tema "Silk" usando **DaisyUI** y efectos de **Glassmorphism** para ofrecer una sensación premium y moderna que va más allá de un MVP básico.
 
 ---
 
-## 🕹️ Uso
+## 💎 Principios de Ingeniería Fundamentales
 
--   **Frontend**: [http://localhost:3000](http://localhost:3000)
--   **Documentación de API (Swagger)**: [http://localhost:4000/api/docs](http://localhost:4000/api/docs)
+### 🧱 Aplicación de SOLID
+1.  **S (Responsabilidad Única)**:
+    -   `Controllers`: Gestionan el enrutamiento HTTP y el mapeo de entrada.
+    -   `Services`: Contienen la lógica pura de negocio del dominio (ej. validaciones de precios).
+    -   `Entities`: Definen la estructura de datos y el mapeo de la base de datos.
+2.  **O (Abierto/Cerrado)**: El motor de validación en `TradeOrdersService` está diseñado para ser fácilmente extensible. Añadir un nuevo par de divisas o un nuevo tipo de orden no requiere reescribir la lógica central; simplemente se extienden las constantes y las reglas de validación.
+3.  **L (Sustitución de Liskov)**: Utilizamos una clase abstracta `BaseEntity` de la cual heredan todas las entidades. Esto garantiza que todas compartan campos de auditoría comunes (`id`, `created_at`, `deleted_at`) de manera consistente.
+4.  **D (Inversión de Dependencias)**: Los módulos de alto nivel no dependen de detalles de bajo nivel de la base de datos; dependen de abstracciones (patrón Repository proporcionado por TypeORM).
+
+### 🏷️ Domain-Driven Design (DDD) Lite
+Aunque no implementamos un DDD táctico completo, aplicamos varios conceptos:
+-   **Capa de Servicio Rica**: El `TradeOrdersService` actúa como el guardián de las reglas del dominio, evitando la creación de estados de órdenes inválidos.
+-   **Lenguaje Ubicuo**: Terminología como "Side" (Compra/Venta), "Type" (Límite/Mercado/Tope) y "Pair" (BTCUSD) es consistente desde el esquema de la base de datos hasta las etiquetas de la UI.
 
 ---
 
-## 🧑‍🚀 Autor
+## 🛠️ Funcionalidades Destacadas
 
-**Max Shtefec**
-*Software Architect / Full Stack Developer*
--   [GitHub](https://github.com/maxshdev)
--   [LinkedIn](https://linkedin.com/in/maxshtefec)
+### 📉 Motor de Validación Complejo
+Validado estrictamente contra precios de mercado en tiempo real:
+-   **Órdenes Límite**: Compra por debajo del mercado, Venta por encima del mercado.
+-   **Órdenes Stop**: Compra por encima del mercado, Venta por debajo del mercado.
+-   **Órdenes de Mercado**: Ejecución instantánea sin necesidad de validación de precio.
+
+### ♻️ Soft Delete (Borrado Lógico) para Auditoría
+En lugar de eliminar físicamente los datos, utilizamos `@DeleteDateColumn` de TypeORM.
+-   **¿Por qué?**: En sistemas financieros, la auditoría es crítica. Nunca perdemos el historial.
+-   **Integración de UX**: En el frontend, las órdenes borradas permanecen visibles con una `opacity-50` y una etiqueta de **BORRADO**, permitiendo a los administradores ver el historial completo de actividad.
+
+### 📜 Docs Interactivos (Swagger)
+Ubicado en `/api/docs`, la integración de Swagger proporciona un Sandbox donde los desarrolladores pueden:
+-   Visualizar toda la superficie de la API.
+-   Ver los esquemas de los DTOs.
+-   Realizar peticiones reales y ver las respuestas en tiempo real.
+
+---
+
+## 🧪 Calidad y Verificación
+
+-   **Pruebas Unitarias**: Pruebas exhaustivas con Jest para el `TradeOrdersService` aseguran que los casos de borde (montos inválidos, direcciones de precio incorrectas) se detecten automáticamente.
+-   **Seguridad de Tipos**: Se aplica TypeScript estrictamente en ambas aplicaciones para prevenir errores de "undefined" en tiempo de ejecución.
+
+---
+
+## 🚀 Instrucciones de Configuración
+
+1.  **Requisitos**: Node.js 20+, pnpm v8+, MySQL.
+2.  **Instalación**: `pnpm install`
+3.  **Base de Datos**: La API crea automáticamente la base de datos si no existe, basándose en las credenciales de tu `.env` en `apps/api`.
+4.  **Ejecución**: `pnpm dev`
+
+---
+
+**Max Shtefec** - *Software Architect / Full Stack Developer*
+[GitHub](https://github.com/maxshdev) | [LinkedIn](https://linkedin.com/in/maxshtefec)
