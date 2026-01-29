@@ -23,4 +23,4 @@
 
 ## Description
 
-API REST construida con [NestJS](https://github.com/nestjs/nest) y TypeScript.
+API REST built with [NestJS](https://github.com/nestjs/nest) and TypeScript.
