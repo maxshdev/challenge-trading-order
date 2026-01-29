@@ -12,6 +12,7 @@ export interface ITradeOrder {
     pair: string;
     created_at: string;
     updated_at: string;
+    deleted_at?: string;
 }
 
 export interface ICreateTradeOrder {

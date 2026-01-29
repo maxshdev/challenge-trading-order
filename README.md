@@ -1,107 +1,88 @@
-# 🧩 Monorepo – NestJS + NextJS + pnpm
+# 🧩 Monorepo: Trading Order System (NestJS + Next.js)
 
-Este proyecto es un **monorepo** configurado con **pnpm workspaces**, que contiene dos aplicaciones principales:
+Welcome to the **Trading Order System**, a robust full-stack solution built as part of a technical challenge. This project demonstrates a production-ready architecture designed for scalability, type safety, and efficient data management.
 
-- **apps/api** → Backend con NestJS
-- **apps/web** → Frontend con Next.js
-- **packages/shared** → Módulos, tipos y utilidades compartidas entre ambas apps
+## 🎙️ The "Speech": Why this Architecture?
 
-## 📁 Estructura del proyecto
+When building modern web applications, the choice of tools defines the project's success. Here is why we chose this specific stack:
 
-my-project/
-├── apps/
-│   ├── api/        # Backend NestJS
-│   └── web/        # Frontend NextJS
-├── packages/
-│   └── shared/     # Código compartido (DTOs, tipos, utils, etc.)
-├── pnpm-workspace.yaml
-├── package.json
-└── tsconfig.base.json
+### 1. Why a Monorepo?
+We used a **pnpm monorepo** structure to keep the backend and frontend tightly coupled but physically separated. This allows us to:
+-   **Unified Workflow**: Manage dependencies and run both applications from a single root.
+-   **Shared Standards**: Maintain consistent linting, formatting, and TypeScript configurations across the entire codebase.
+-   **Future Scalability**: Easily add shared packages (like DTOs or utility functions) that both the API and Web applications can consume.
 
-## 🚀 Requisitos
+### 2. Why NestJS for the Backend?
+NestJS was the clear choice for the API because:
+-   **Modular Architecture**: It enforces a clean separation of concerns using Modules, Controllers, and Services.
+-   **Built-in Validations**: Using `class-validator` and `ValidationPipe`, we ensure that every piece of data entering our system is schema-valid.
+-   **Developer Experience**: Features like **Swagger UI** (available at `/api/docs`) allow for instant API exploration and testing without external tools.
 
-- Node.js 20+
-- pnpm v8+
-- PM2 (para producción)
-- GitHub Actions habilitado para CI/CD
-
-## ⚙️ Instalación
-
-git clone https://github.com/<tu-usuario>/<tu-repo>.git
-cd my-project
-pnpm install
-
-## 🧑‍💻 Desarrollo local
-
-### API (NestJS)
-pnpm --filter api dev
-
-### Web (NextJS)
-pnpm --filter web dev
-
-O levantar ambas en paralelo:
-pnpm dev
-
-## 🏗️ Build de producción
-
-pnpm --filter api build
-pnpm --filter web build
-
-## 📦 Despliegue (PM2 + GitHub Actions)
-
-Cada aplicación tiene su pipeline independiente en GitHub Actions:
-- .github/workflows/deploy-api.yml
-- .github/workflows/deploy-web.yml
-
-Cada uno se ejecuta solo cuando hay cambios en su respectiva carpeta (apps/api o apps/web).
-
-En el servidor, las apps se manejan con PM2:
-
-# API
-cd ~/apps/api
-pnpm install --prod
-pm2 start dist/main.js --name api
-
-# Web
-cd ~/apps/web
-pnpm install --prod
-pm2 start "pnpm start --filter web" --name web
-
-Para reiniciar después de un deploy:
-pm2 restart api
-pm2 restart web
-
-## ⚡ Scripts útiles
-
-Desde la raíz del monorepo:
-
-| Comando | Descripción |
-|----------|--------------|
-| pnpm dev | Levanta todas las apps en modo desarrollo |
-| pnpm build | Compila todas las apps |
-| pnpm start | Inicia todas las apps compiladas |
-| pnpm --filter api ... | Ejecuta un comando solo en la app api |
-| pnpm --filter web ... | Ejecuta un comando solo en la app web |
-
-## 🧠 Notas
-
-- packages/shared permite compartir código (DTOs, validadores, tipos, etc.) entre api y web.
-- Cada app tiene su propio package.json y sus dependencias aisladas.
-- En producción, se recomienda mantener las rutas:
-  ~/apps/api
-  ~/apps/web
-- Si usás GitHub Actions, asegurate de configurar los secretos:
-  SERVER_HOST, SERVER_USER, SERVER_SSH_KEY
-
-## 🧑‍🚀 Autor
-
-Max Shetefec
-Software Architect / Full Stack Developer
-GitHub: https://github.com/maxshdev
-LinkedIn: https://linkedin.com/in/maxshtefec
-
-## 📝 Licencia
-
-Este proyecto está bajo la licencia MIT. Podés usarlo, modificarlo y distribuirlo libremente.
+### 3. Why Next.js for the Frontend?
+For the web application, Next.js provides:
+-   **Server-Side Capabilities**: Using **Server Actions** and **Server Components**, we reduce the amount of JavaScript sent to the client while keeping the data flow secure.
+-   **Localization**: Integrated with `next-intl` to support multiple languages seamlessly.
+-   **Modern Design**: Built with **DaisyUI** and **Tailwind CSS**, providing a premium, responsive glassmorphism aesthetic.
 
 ---
+
+## 🚀 Main Features
+
+-   **Complex Trade Validations**: Strict logic for **Limit**, **Market**, and **Stop** orders based on real-time market prices (BTCUSD, EURUSD, ETHUSD).
+-   **Soft Delete System**: Orders are never truly lost. They are marked as deleted but remain in the database for auditing, visible in the UI with a special badge.
+-   **Advanced Pagination**: Efficient data fetching with server-side pagination to handle thousands of orders without performance hits.
+-   **Interactive API Docs**: Fully documented REST API using Swagger.
+-   **Unit Testing**: Core business logic (validations) is backed by Jest unit tests.
+
+---
+
+## 📁 Project Structure
+
+```text
+/
+├── apps/
+│   ├── api/        # NestJS (Backend) - Port 4000
+│   └── web/        # Next.js (Frontend) - Port 3000
+├── packages/
+│   └── shared/     # (Placeholder for future shared logic)
+├── package.json    # Root scripts
+└── README.md       # English Documentation
+└── README.ES.md    # Spanish Documentation
+```
+
+## ⚙️ Installation & Setup
+
+### Prerequisites
+-   Node.js 20+
+-   pnpm v8+
+-   MySQL Database
+
+### Steps
+1.  **Clone and Install**:
+    ```bash
+    git clone <repo-url>
+    cd challenge-trading-order
+    pnpm install
+    ```
+2.  **Environment Variables**:
+    Configure `.env` in `apps/api` with your MySQL credentials (DB_HOST, DB_NAME, DB_USER, DB_PASS).
+3.  **Run Development**:
+    ```bash
+    pnpm dev
+    ```
+
+---
+
+## 🕹️ Usage
+
+-   **Frontend**: [http://localhost:3000](http://localhost:3000)
+-   **API Documentation (Swagger)**: [http://localhost:4000/api/docs](http://localhost:4000/api/docs)
+
+---
+
+## 🧑‍🚀 Author
+
+**Max Shtefec**
+*Software Architect / Full Stack Developer*
+-   [GitHub](https://github.com/maxshdev)
+-   [LinkedIn](https://linkedin.com/in/maxshtefec)

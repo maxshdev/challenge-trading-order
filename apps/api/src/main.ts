@@ -54,10 +54,7 @@ async function bootstrap() {
   // -------------------------------------------------------------
   const allowedOrigins = [
     'http://localhost:3000',
-    'http://localhost:3001',
     'https://localhost:3000',
-    'https://localhost:3001',
-    'https://admin.ragemultiverse.com',
     'http://localhost:4000',  // 👈 Swagger local
     'https://localhost:4000', // 👈 Swagger con https (si aplica)
   ];

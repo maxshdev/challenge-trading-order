@@ -8,12 +8,16 @@ async function handleResponse(res: Response) {
             : errorData.message || "Ocurrió un error";
         throw new Error(message);
     }
-    return res.json();
+    const contentType = res.headers.get("content-type");
+    if (contentType && contentType.includes("application/json")) {
+        return res.json();
+    }
+    return null;
 }
 
 export const TradeOrderService = {
-    getAll: async () => {
-        const res = await fetch(`${API_URL}/trade_orders`, { cache: 'no-store' });
+    getAll: async (page: number = 1, limit: number = 10) => {
+        const res = await fetch(`${API_URL}/trade_orders?page=${page}&limit=${limit}`, { cache: 'no-store' });
         return handleResponse(res);
     },
 
@@ -22,6 +26,13 @@ export const TradeOrderService = {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(data),
+        });
+        return handleResponse(res);
+    },
+
+    delete: async (id: string) => {
+        const res = await fetch(`${API_URL}/trade_orders/${id}`, {
+            method: "DELETE",
         });
         return handleResponse(res);
     },
